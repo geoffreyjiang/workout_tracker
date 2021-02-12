@@ -1,4 +1,6 @@
 const Workout = require("../models/workout");
+const express = require("express");
+
 const router = require("express").Router();
 
 router.get("/api/workouts", (req, res) => {
@@ -8,7 +10,7 @@ router.get("/api/workouts", (req, res) => {
       $addFields: { totalDuration: { $sum: "$exercises.duration" } },
     },
   ])
-    .sort({ day: -1 })
+    .sort({ date: -1 })
     .then((data) => {
       res.json(data);
     })
@@ -16,38 +18,9 @@ router.get("/api/workouts", (req, res) => {
       res.json(err);
     });
 
-  router.post("/api/workouts", (req, res) => {
-    Workout.create(body)
-      .then((data) => {
-        res.json(data);
-      })
-      .catch((err) => {
-        res.json(err);
-        console.log(err);
-      });
-  });
-
-  router.get("/api/workouts/range", (req, res) => {
-    Workout.find({});
-    Workout.aggregate([
-      {
-        $addFields: { totalDuration: { $sum: "$exercises.duration" } },
-      },
-    ])
-      .sort({ day: -1 })
-      .then((data) => {
-        res.json(data);
-      })
-      .catch((err) => {
-        res.json(err);
-      });
-  });
-
   router.put("/api/workouts/:id", (req, res) => {
-    console.log("Params", req.body, req.params);
-
-    Workout.findOneAndUpdate(
-      { _id: req.params.id },
+    Workout.findByIdAndUpdate(
+      req.params.id,
       { $push: { exercises: req.body } },
       { new: true }
     )
@@ -58,6 +31,35 @@ router.get("/api/workouts", (req, res) => {
         res.json(err);
       });
   });
+});
+
+router.post("/api/workouts", (req, res) => {
+  Workout.create({})
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.json(err);
+      console.log(err);
+    });
+});
+
+router.get("/api/workouts/range", (req, res) => {
+  Workout.find({});
+  Workout.aggregate([
+    {
+      $addFields: { totalDuration: { $sum: "$exercises.duration" } },
+    },
+  ])
+    .sort({ date: -1 })
+    .limit(7)
+    .sort({ date: 1 })
+    .then((data) => {
+      res.json(data);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
 });
 
 module.exports = router;
