@@ -20,7 +20,7 @@ router.get("/api/workouts", (req, res) => {
 
   router.put("/api/workouts/:id", (req, res) => {
     Workout.findOneAndUpdate(
-      { id: req.params.id },
+      { _id: req.params.id },
       { $push: { exercises: req.body } },
       { new: true }
     )
@@ -44,7 +44,7 @@ router.post("/api/workouts", (req, res) => {
     });
 });
 
-router.post("/api/work/range", (req, res) => {
+router.post("/api/workouts/range", (req, res) => {
   Workout.create({})
     .then((data) => {
       res.json(data);
