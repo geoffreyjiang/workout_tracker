@@ -10,7 +10,7 @@ router.get("/api/workouts", (req, res) => {
       $addFields: { totalDuration: { $sum: "$exercises.duration" } },
     },
   ])
-    .sort({ date: -1 })
+    .sort({ day: -1 })
     .then((data) => {
       res.json(data);
     })
@@ -61,7 +61,7 @@ router.get("/api/workouts/range", (req, res) => {
       $addFields: { totalDuration: { $sum: "$exercises.duration" } },
     },
   ])
-    .sort({ date: 1 })
+    .sort({ day: 1 })
     .limit(7)
     .then((data) => {
       res.json(data);
